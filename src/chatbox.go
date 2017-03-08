@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
+	"log"
 	"net/http"
 	"webserver"
 )
@@ -22,15 +23,12 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	if err != nil {
-		panic(err)
-	}
 	//Close if something went wrong
 	defer c.Close()
 
 	//username come from form login.html
 
-	fmt.Printf("Connected! ", response)
+	fmt.Printf("Connected! ", c)
 
 	http.HandleFunc("/login", webserver.Login)
 	http.HandleFunc("/mychat", webserver.Index)
