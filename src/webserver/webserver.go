@@ -65,13 +65,10 @@ func Index(res http.ResponseWriter, req *http.Request) {
 }
 
 func Login(res http.ResponseWriter, req *http.Request) {
-	Render(res, "src/templates/index.html", nil)
+	Render(res, "src/templates/login.html", nil)
 }
 
 //Return User
-func Retrieveuser() {
-
-}
 
 func Room(res http.ResponseWriter, req *http.Request) {
 
