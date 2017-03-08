@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
+	"net/http"
 )
 
 // TO DO
@@ -19,14 +20,21 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	response, err := c.Do("AUTH", "YOUR_PASSWORD")
-
 	if err != nil {
 		panic(err)
 	}
 
+	response, err := c.Do("AUTH", "YOUR_PASSWORD")
+
 	fmt.Printf("Connected! ", response)
 	defer c.Close()
+
+	http.HandleFunc("/mychat", webserver.Index)
+	http.HandleFunc("/room", webserver.Room)
+
+	//Handle URL ERROR
+	http.HandleFunc("/", webserver.Error)
+	// Init WebServer
+	http.ListenAndServe(":10000", nil)
 
 }
