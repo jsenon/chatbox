@@ -35,6 +35,9 @@ func main() {
 	//Handle URL ERROR
 	http.HandleFunc("/", webserver.Error)
 	// Init WebServer
-	http.ListenAndServe(":10000", nil)
+
+	if err := http.ListenAndServe(":10000", nil); err != nil {
+		log.Fatal("ListenAndServe:", err)
+	}
 
 }
