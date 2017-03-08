@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"github.com/garyburd/redigo/redis"
 	"net/http"
+	"webserver"
 )
 
 // TO DO
 // Build Docker File
 // Construct and configure Redis
+// Add function webserver
 //
 
 // TO FIX
@@ -23,12 +25,14 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-
-	response, err := c.Do("AUTH", "YOUR_PASSWORD")
-
-	fmt.Printf("Connected! ", response)
+	//Close if something went wrong
 	defer c.Close()
 
+	//username come from form login.html
+
+	fmt.Printf("Connected! ", response)
+
+	http.HandleFunc("/login", webserver.Login)
 	http.HandleFunc("/mychat", webserver.Index)
 	http.HandleFunc("/room", webserver.Room)
 
