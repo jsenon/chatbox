@@ -1,10 +1,12 @@
 package main
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
-	"redis"
+	// "os"
+	// "redis"
 	"webserver"
 )
 
@@ -16,9 +18,11 @@ import (
 
 // TO FIX
 
-var RedisServer = flag.String("127.0.0.1", ":6379", "")
+var RedisServer = flag.String("ipaddr", "127.0.0.1", ":6379")
 
 func main() {
+
+	fmt.Println("connec chain", *RedisServer)
 
 	http.HandleFunc("/login", webserver.Login)
 	http.HandleFunc("/mychat", webserver.Index)
@@ -32,25 +36,15 @@ func main() {
 	}
 
 	// Call Redis connection
-	fmt.Println("connec chain", RediServer)
-	c, err := redis.ConnectRedis(RedisServer)
-	if err != nil {
-		panic(err)
-	}
-	fmt.Println("status redis: ", c)
+	fmt.Println("connec chain", RedisServer)
+	//c, err := redis.ConnectRedis(RedisServer)
+	//if err != nil {
+	//	panic(err)
+	//}
+	//fmt.Println("status redis: ", c)
 
 	// username.Name = req.FormValue("name")
 	// userkey := "online." + username.Name
 	// val, err := c.Do("SET", userkey, username.Name, "NX", "EX", "120")
-
-	if err != nil {
-		fmt.Println(err)
-		os.Exit(1)
-	}
-
-	if val == nil {
-		fmt.Println("User already online")
-		os.Exit(1)
-	}
 
 }
