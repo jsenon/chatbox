@@ -13,8 +13,7 @@ import (
 )
 
 // TO DO
-// Build Docker File
-// Construct and configure Redis
+// Construct pu
 // Add function webserver
 //
 
@@ -44,6 +43,8 @@ func main() {
 
 	// Call Redis connection
 	stateRedis, c, errRedis := redis.ConnectRedis(RedisServer.String())
+	defer c.Close()
+
 	if errRedis != nil {
 		panic(errRedis)
 	}
@@ -80,9 +81,10 @@ func main() {
 		panic(val)
 	}
 	// Print who is connected
+	// Set timer 2s
 	duration := time.Duration(2) * time.Second
 	// TEST PURPOSE
-	// Check online/offline function
+	// Check online/offline function loop 60s
 	for i := 0; i < 30; i++ {
 		// Force John lgout
 		if username == "John" && i == 15 {
