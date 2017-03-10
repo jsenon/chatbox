@@ -22,7 +22,7 @@ At this stage only offline/online communication with redis is available
 
 Simulate John
 ```sh
-go run src/chatbox.go UsernameA
+go run src/chatbox.go John
 ```
 
 Simulate Duff
