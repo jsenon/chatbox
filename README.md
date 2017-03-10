@@ -20,14 +20,14 @@ docker run -p 127.0.0.1:6379:6379 --name chat-redis -t redis
 ```
 At this stage only offline/online communication with redis is available
 
-Simulate userA
+Simulate John
 ```sh
 go run src/chatbox.go UsernameA
 ```
 
-Simulate userB
+Simulate Duff
 ```sh
-go run src/chatbox.go UsernameB
+go run src/chatbox.go Duff
 ```
 
 ### Access

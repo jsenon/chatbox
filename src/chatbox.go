@@ -34,7 +34,7 @@ func main() {
 	// TEST PURPOSE
 	// Username is retrieve through argument in command line
 	if len(os.Args) != 2 {
-		fmt.Println("Usage: goredchat username")
+		fmt.Println("Usage: chatbox username")
 		os.Exit(1)
 	}
 	username := os.Args[1]
