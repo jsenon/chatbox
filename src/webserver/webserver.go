@@ -1,6 +1,7 @@
 package webserver
 
 import (
+	"fmt"
 	"html/template"
 	"net/http"
 )
@@ -10,7 +11,6 @@ import (
 
 type User struct {
 	Name string
-	Age  int
 }
 
 var username User
@@ -35,17 +35,13 @@ func Index(res http.ResponseWriter, req *http.Request) {
 	}
 
 	req.ParseForm()
+	username.Name = req.FormValue("name")
+	fmt.Println("Username:", username)
 	Render(res, "src/templates/index.html", data)
 }
 
 func Login(res http.ResponseWriter, req *http.Request) {
 	Render(res, "src/templates/login.html", nil)
-}
-
-//Return User
-
-func Room(res http.ResponseWriter, req *http.Request) {
-
 }
 
 func Error(res http.ResponseWriter, req *http.Request) {
