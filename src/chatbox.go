@@ -1,17 +1,10 @@
 package main
 
 import (
-	// "fmt"
-	"net/http"
-	// "os"
-	// "bufio"
 	"bytes"
-	// redigo "github.com/garyburd/redigo/redis"
+	"code.google.com/p/go.net/websocket"
 	"log"
-	// "os"
-	// "redis"
-	// "time"
-	"webserver"
+	"net/http"
 )
 
 // TO DO
@@ -20,25 +13,16 @@ import (
 
 // TO FIX
 
-var RedisServer bytes.Buffer
-
 // For testPurpose before retrieve it from webserver
-var username string
-
 func main() {
 
-	// Web Part
-	r := newRoom()
-
-	http.HandleFunc("/login", webserver.Login)
 	http.HandleFunc("/mychat", webserver.Index)
-	http.HandleFunc("/room", r)
 	go r.run()
-	//Handle URL ERROR
+	// Handle URL ERROR
 	http.HandleFunc("/", webserver.Error)
 	// Init WebServer
+	http.Handle("/ws", websocket.Handler(handleWSConnection))
 	if err := http.ListenAndServe(":10000", nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}
-
 }
