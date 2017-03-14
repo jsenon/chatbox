@@ -101,6 +101,31 @@ func main() {
 		}
 		time.Sleep(duration)
 	}
+
+	//Subscribing message
+	subChan := make(chan string)
+	go func() {
+		stateRedisSub, subconn, errRedisSub := redis.ConnectRedis(RedisServer.String())
+		if errRedisSub != nil {
+			fmt.Println(errRedisSub)
+			os.Exit(1)
+		}
+		defer subconn.Close()
+
+		psc := redis.PubSubConn{Conn: subconn}
+		psc.Subscribe("messages")
+		for {
+			switch v := psc.Receive().(type) {
+			case redis.Message:
+				subChan <- string(v.Data)
+			case redis.Subscription:
+				// We don't need to listen to subscription messages,
+			case error:
+				return
+			}
+		}
+	}()
+
 	// Logout User
 	// Clean all keys
 	// Publish left message
