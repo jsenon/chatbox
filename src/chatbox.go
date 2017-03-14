@@ -1,10 +1,10 @@
 package main
 
 import (
-	"bytes"
-	"code.google.com/p/go.net/websocket"
+	"github.com/gorilla/websocket"
 	"log"
 	"net/http"
+	"webserver"
 )
 
 // TO DO
@@ -17,7 +17,6 @@ import (
 func main() {
 
 	http.HandleFunc("/mychat", webserver.Index)
-	go r.run()
 	// Handle URL ERROR
 	http.HandleFunc("/", webserver.Error)
 	// Init WebServer
