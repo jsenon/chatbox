@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	// "os"
+	"bufio"
 	"bytes"
 	redigo "github.com/garyburd/redigo/redis"
 	"os"
@@ -80,51 +81,104 @@ func main() {
 		fmt.Println("User already stored")
 		panic(val)
 	}
+	// TEST PURPOSE
 	// Print who is connected
 	// Set timer 2s
-	duration := time.Duration(2) * time.Second
-	// TEST PURPOSE
+	// duration := time.Duration(2) * time.Second
 	// Check online/offline function loop 60s
-	for i := 0; i < 30; i++ {
-		// Force John lgout
-		if username == "John" && i == 15 {
-			c.Do("DEL", userkey)
-			c.Do("SREM", "users", username)
-			c.Do("PUBLISH", "messages", username+" has left")
-			os.Exit(1)
-		}
-		// Who is online
-		fmt.Println("-----")
-		names, _ := redigo.Strings(c.Do("SMEMBERS", "users"))
-		for _, name := range names {
-			fmt.Println("Users online: ", name)
-		}
-		time.Sleep(duration)
-	}
+	// for i := 0; i < 30; i++ {
+	// 	// Force John lgout
+	// 	if username == "John" && i == 15 {
+	// 		c.Do("DEL", userkey)
+	// 		c.Do("SREM", "users", username)
+	// 		c.Do("PUBLISH", "messages", username+" has left")
+	// 		os.Exit(1)
+	// 	}
+	// 	// Who is online
+	// 	fmt.Println("-----")
+	// 	names, _ := redigo.Strings(c.Do("SMEMBERS", "users"))
+	// 	for _, name := range names {
+	// 		fmt.Println("Users online: ", name)
+	// 	}
+	// 	time.Sleep(duration)
+	// }
 
-	//Subscribing message
+	// Update Availability
+	//tickerChan := time.NewTicker(time.Second * 60).C
+
+	// Subscribing message
+	// To be redireted to HTML Java
 	subChan := make(chan string)
 	go func() {
 		stateRedisSub, subconn, errRedisSub := redis.ConnectRedis(RedisServer.String())
 		if errRedisSub != nil {
 			fmt.Println(errRedisSub)
+			fmt.Println(stateRedisSub)
 			os.Exit(1)
 		}
 		defer subconn.Close()
 
-		psc := redis.PubSubConn{Conn: subconn}
+		psc := redigo.PubSubConn{Conn: subconn}
+		// Subscribe to channel messages
 		psc.Subscribe("messages")
 		for {
 			switch v := psc.Receive().(type) {
-			case redis.Message:
+			case redigo.Message:
 				subChan <- string(v.Data)
-			case redis.Subscription:
+			case redigo.Subscription:
 				// We don't need to listen to subscription messages,
 			case error:
 				return
 			}
 		}
 	}()
+
+	// Sending message
+	// To be redirected to HTML Java
+	sayChan := make(chan string)
+	go func() {
+		prompt := username + ">"
+		bio := bufio.NewReader(os.Stdin)
+		for {
+			fmt.Print(prompt)
+			line, _, err := bio.ReadLine()
+			if err != nil {
+				fmt.Println(err)
+				sayChan <- "/exit"
+				return
+			}
+			sayChan <- string(line)
+		}
+	}()
+
+	c.Do("PUBLISH", "messages", username+" has joined")
+	chatExit := false
+
+	for !chatExit {
+		select {
+		case msg := <-subChan:
+			fmt.Println(msg)
+		// case <-tickerChan:
+		// 	val, err = c.Do("SET", userkey, username, "XX", "EX", "120")
+		// 	if err != nil || val == nil {
+		// 		fmt.Println("Heartbeat set failed")
+		// 		chatExit = true
+		// 	}
+		case line := <-sayChan:
+			if line == "/exit" {
+				chatExit = true
+			} else if line == "/who" {
+				names, _ := redigo.Strings(c.Do("SMEMBERS", "users"))
+				for _, name := range names {
+					fmt.Println(name)
+				}
+			} else {
+				c.Do("PUBLISH", "messages", username+":"+line)
+			}
+		default:
+			time.Sleep(100 * time.Millisecond)
+		}
+	}
 
 	// Logout User
 	// Clean all keys
