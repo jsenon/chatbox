@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/gorilla/websocket"
+	//"github.com/gorilla/websocket"
 	"log"
 	"net/http"
 	"webserver"
@@ -20,7 +20,7 @@ func main() {
 	// Handle URL ERROR
 	http.HandleFunc("/", webserver.Error)
 	// Init WebServer
-	http.Handle("/ws", websocket.Handler(handleWSConnection))
+	http.HandleFunc("/ws", handleWSConnection)
 	if err := http.ListenAndServe(":10000", nil); err != nil {
 		log.Fatal("ListenAndServe:", err)
 	}

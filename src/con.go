@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"encoding/json"
 	"github.com/garyburd/redigo/redis"
 	"github.com/gorilla/websocket"
