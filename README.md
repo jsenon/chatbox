@@ -1,7 +1,7 @@
 # ChatBox
 
 
-Build Chat Server based on redis
+Build CLI Chat Server based on redis
 
 ### Prerequisite
 
@@ -18,26 +18,25 @@ Start your redis
 ```sh
 docker run -p 127.0.0.1:6379:6379 --name chat-redis -t redis
 ```
-At this stage only offline/online communication with redis is available
+At this stage only CLI is implemented
 
-Simulate John
+Launch with your user ie. John
 ```sh
 go run src/chatbox.go John
 ```
 
-Simulate Duff
+Launch with another user ie. Duff
 ```sh
 go run src/chatbox.go Duff
 ```
 
 ### Access
 
-TBD
+CLI
 
 ### Todo
 
-Construct Docker Redis
-
+Construct Websocket
 
 
 
