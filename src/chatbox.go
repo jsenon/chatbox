@@ -1,20 +1,16 @@
 package main
 
 import (
-	"fmt"
-	"net/http"
-	// "os"
 	"bufio"
 	"bytes"
+	"fmt"
 	redigo "github.com/garyburd/redigo/redis"
 	"os"
 	"redis"
 	"time"
-	"webserver"
 )
 
 // TO DO
-// Construct pu
 // Add function webserver
 //
 
@@ -69,7 +65,7 @@ func main() {
 		// To be redirected on future login page
 		panic(val)
 	}
-	fmt.Println("Log redis", c)
+	// fmt.Println("Log redis", c)
 	// We add the specified members to the set stored at key users
 	val, err = c.Do("SADD", "users", username)
 	if err != nil {
@@ -81,33 +77,8 @@ func main() {
 		fmt.Println("User already stored")
 		panic(val)
 	}
-	// TEST PURPOSE
-	// Print who is connected
-	// Set timer 2s
-	// duration := time.Duration(2) * time.Second
-	// Check online/offline function loop 60s
-	// for i := 0; i < 30; i++ {
-	// 	// Force John lgout
-	// 	if username == "John" && i == 15 {
-	// 		c.Do("DEL", userkey)
-	// 		c.Do("SREM", "users", username)
-	// 		c.Do("PUBLISH", "messages", username+" has left")
-	// 		os.Exit(1)
-	// 	}
-	// 	// Who is online
-	// 	fmt.Println("-----")
-	// 	names, _ := redigo.Strings(c.Do("SMEMBERS", "users"))
-	// 	for _, name := range names {
-	// 		fmt.Println("Users online: ", name)
-	// 	}
-	// 	time.Sleep(duration)
-	// }
-
-	// Update Availability
-	//tickerChan := time.NewTicker(time.Second * 60).C
 
 	// Subscribing message
-	// To be redireted to HTML Java
 	subChan := make(chan string)
 	go func() {
 		stateRedisSub, subconn, errRedisSub := redis.ConnectRedis(RedisServer.String())
@@ -134,7 +105,6 @@ func main() {
 	}()
 
 	// Sending message
-	// To be redirected to HTML Java
 	sayChan := make(chan string)
 	go func() {
 		prompt := username + ">"
@@ -149,6 +119,7 @@ func main() {
 			}
 			sayChan <- string(line)
 		}
+
 	}()
 
 	c.Do("PUBLISH", "messages", username+" has joined")
@@ -175,6 +146,7 @@ func main() {
 			} else {
 				c.Do("PUBLISH", "messages", username+":"+line)
 			}
+
 		default:
 			time.Sleep(100 * time.Millisecond)
 		}
@@ -186,19 +158,4 @@ func main() {
 	c.Do("DEL", userkey)
 	c.Do("SREM", "users", username)
 	c.Do("PUBLISH", "messages", username+" has left")
-	// TEST PURPOSE ONLY
-	// A ticker will let us update our presence on the Redis server
-	// tickerChan := time.NewTicker(time.Second * 60).C
-
-	// Web Part
-	//Handle Func
-	http.HandleFunc("/login", webserver.Login)
-	http.HandleFunc("/mychat", webserver.Index)
-	http.HandleFunc("/room", webserver.Room)
-	//Handle URL ERROR
-	http.HandleFunc("/", webserver.Error)
-	// Init WebServer
-	// if err := http.ListenAndServe(":10000", nil); err != nil {
-	// 	log.Fatal("ListenAndServe:", err)
-	// }
 }
